@@ -1,5 +1,5 @@
-#ifndef FAST_WFC_UTILS_COLOR_HPP_
-#define FAST_WFC_UTILS_COLOR_HPP_
+#ifndef FAST_WFC_UTILS_COLOR_H
+#define FAST_WFC_UTILS_COLOR_H
 
 #include <functional>
 

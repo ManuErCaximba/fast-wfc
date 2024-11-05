@@ -1,12 +1,11 @@
-#ifndef FAST_WFC_WFC_HPP_
-#define FAST_WFC_WFC_HPP_
+#ifndef FAST_WFC_WFC_H
+#define FAST_WFC_WFC_H
 
-#include <optional>
 #include <random>
 
-#include "utils/array2D.hpp"
-#include "propagator.hpp"
-#include "wave.hpp"
+#include "utils/array2D.h"
+#include "propagator.h"
+#include "wave.h"
 
 /**
  * Class containing the generic WFC algorithm.
@@ -43,7 +42,7 @@ private:
    * contradiction). This function should be used only when all cell of the wave
    * are defined.
    */
-  Array2D<unsigned> wave_to_output() const noexcept;
+  Array2D<unsigned> *wave_to_output() const noexcept;
 
 public:
   /**
@@ -57,7 +56,7 @@ public:
   /**
    * Run the algorithm, and return a result if it succeeded.
    */
-  std::optional<Array2D<unsigned>> run() noexcept;
+  Array2D<unsigned> *run() noexcept;
 
   /**
    * Return value of observe.

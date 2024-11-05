@@ -1,4 +1,4 @@
-#include "wave.hpp"
+#include "../include/wave.h"
 
 #include <limits>
 

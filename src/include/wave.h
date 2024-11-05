@@ -1,7 +1,7 @@
-#ifndef FAST_WFC_WAVE_HPP_
-#define FAST_WFC_WAVE_HPP_
+#ifndef FAST_WFC_WAVE_H
+#define FAST_WFC_WAVE_H
 
-#include "utils/array2D.hpp"
+#include "utils/array2D.h"
 #include <random>
 #include <vector>
 

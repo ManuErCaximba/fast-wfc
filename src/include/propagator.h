@@ -1,8 +1,8 @@
-#ifndef FAST_WFC_PROPAGATOR_HPP_
-#define FAST_WFC_PROPAGATOR_HPP_
+#ifndef FAST_WFC_PROPAGATOR_H
+#define FAST_WFC_PROPAGATOR_H
 
-#include "direction.hpp"
-#include "utils/array3D.hpp"
+#include "direction.h"
+#include "utils/array3D.h"
 #include <tuple>
 #include <vector>
 #include <array>
