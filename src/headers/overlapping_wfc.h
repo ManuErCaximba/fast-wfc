@@ -47,7 +47,7 @@ class OverlappingWFC
 
 private:
 	/**
-	 * The input image. T is usually a color.
+	 * The input image. T is usually a uint_32.
 	 */
 	Array2D<T> input;
 

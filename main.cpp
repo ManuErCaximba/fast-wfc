@@ -1,6 +1,5 @@
 #include "src/headers/overlapping_wfc.h"
 #include "src/headers/tiling_wfc.h"
-#include "src/headers/model/color.h"
 #include "src/headers/model/array3D.h"
 #include "src/headers/wfc.h"
 #include "lib/dependencies.h"
@@ -24,23 +23,26 @@ int get_random_seed()
 #endif
 }
 
-Array2D<Color> *read_image(const std::string &file_path) noexcept
+Array2D<uint32_t> *read_image(const std::string &file_path) noexcept
 {
 	int width;
 	int height;
 	int num_components;
-	unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &num_components, 3);
+	unsigned char *data = stbi_load(file_path.c_str(), &width, &height, &num_components, 4);
 	if (data == nullptr)
 	{
 		return nullptr;
 	}
-	Array2D<Color> *m = new Array2D<Color>(height, width);
+	Array2D<uint32_t> *m = new Array2D<uint32_t>(height, width);
 	for (unsigned i = 0; i < (unsigned)height; i++)
 	{
 		for (unsigned j = 0; j < (unsigned)width; j++)
 		{
-			unsigned index = 3 * (i * width + j);
-			m->data[i * width + j] = {data[index], data[index + 1], data[index + 2]};
+			unsigned index = 4 * (i * width + j);
+			uint8_t array[4] = {data[index], data[index + 2], data[index + 2], data[index + 3]};
+			uint32_t byte;
+			memcpy(&byte, array, sizeof(byte));
+			m->data[i * width + j] = byte;
 		}
 	}
 	free(data);
@@ -50,9 +52,9 @@ Array2D<Color> *read_image(const std::string &file_path) noexcept
 /**
  * Write an image in the png format.
  */
-void write_image_png(const std::string &file_path, const Array2D<Color> &m) noexcept
+void write_image_png(const std::string &file_path, const Array2D<uint32_t> &m) noexcept
 {
-	stbi_write_png(file_path.c_str(), m.width, m.height, 3, (const unsigned char *)m.data.data(), 0);
+	stbi_write_png(file_path.c_str(), m.width, m.height, 4, (const unsigned char *)m.data.data(), 0);
 }
 
 /**
@@ -73,7 +75,7 @@ void read_overlapping_instance(pugi::xml_node &node)
 	std::cout << name << " started!" << std::endl;
 	// Stop hardcoding samples
 	const std::string image_path = "inputs/" + name + ".png";
-	Array2D<Color> *m = read_image(image_path);
+	Array2D<uint32_t> *m = read_image(image_path);
 	if (m == nullptr)
 	{
 		throw "Error while loading " + image_path;
@@ -85,8 +87,8 @@ void read_overlapping_instance(pugi::xml_node &node)
 		for (unsigned test = 0; test < 10; test++)
 		{
 			int seed = get_random_seed();
-			OverlappingWFC<Color> wfc(*m, options, seed);
-			Array2D<Color> *success = wfc.run();
+			OverlappingWFC<uint32_t> wfc(*m, options, seed);
+			Array2D<uint32_t> *success = wfc.run();
 			if (success != nullptr)
 			{
 				write_image_png("outputs/" + name + std::to_string(i) + ".png", *success);
@@ -156,10 +158,10 @@ std::unordered_set<std::string> read_subset_names(pugi::xml_node &node, const st
 /**
  * Read all tiles for a tiling problem
  */
-std::unordered_map<std::string, Tile<Color>> read_tiles(pugi::xml_node &root_node, const std::string &current_dir, const std::string &subset, unsigned size)
+std::unordered_map<std::string, Tile<uint32_t>> read_tiles(pugi::xml_node &root_node, const std::string &current_dir, const std::string &subset, unsigned size)
 {
 	std::unordered_set<std::string> subset_names = read_subset_names(root_node, subset);
-	std::unordered_map<std::string, Tile<Color>> tiles;
+	std::unordered_map<std::string, Tile<uint32_t>> tiles;
 	pugi::xml_node tiles_node = root_node.child("tiles");
 	for (pugi::xml_node &tile : tiles_node.children("tile"))
 	{
@@ -169,11 +171,11 @@ std::unordered_map<std::string, Tile<Color>> read_tiles(pugi::xml_node &root_nod
 		Symmetry symmetry = to_symmetry(tile.attribute("symmetry").as_string());
 		double weight = tile.attribute("weight").as_double() != 0.0 ? tile.attribute("weight").as_double() : 1.0;
 		const std::string image_path = current_dir + "/" + name + ".png";
-		Array2D<Color> *image = read_image(image_path);
+		Array2D<uint32_t> *image = read_image(image_path);
 
 		if (image == nullptr)
 		{
-			std::vector<Array2D<Color>> images;
+			std::vector<Array2D<uint32_t>> images;
 			for (unsigned i = 0; i < nb_of_possible_orientations(symmetry); i++)
 			{
 				const std::string image_path = current_dir + "/" + name + " " + std::to_string(i) + ".png";
@@ -188,7 +190,7 @@ std::unordered_map<std::string, Tile<Color>> read_tiles(pugi::xml_node &root_nod
 				}
 				images.push_back(*image);
 			}
-			Tile<Color> tile = {images, symmetry, weight};
+			Tile<uint32_t> tile = {images, symmetry, weight};
 			tiles.insert({name, tile});
 		}
 		else
@@ -198,7 +200,7 @@ std::unordered_map<std::string, Tile<Color>> read_tiles(pugi::xml_node &root_nod
 				throw "Image " + image_path + " has wrong size";
 			}
 
-			Tile<Color> tile(*image, symmetry, weight);
+			Tile<uint32_t> tile(*image, symmetry, weight);
 			tiles.insert({name, tile});
 		}
 	}
@@ -259,11 +261,11 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 	pugi::xml_node set_node = doc.child("set");
 	unsigned size = set_node.attribute("size").as_uint();
 
-	std::unordered_map<std::string, Tile<Color>> tiles_map = read_tiles(set_node, current_dir + "/" + name, subset, size);
+	std::unordered_map<std::string, Tile<uint32_t>> tiles_map = read_tiles(set_node, current_dir + "/" + name, subset, size);
 	std::unordered_map<std::string, unsigned> tiles_id;
-	std::vector<Tile<Color>> tiles;
+	std::vector<Tile<uint32_t>> tiles;
 	unsigned id = 0;
-	for (std::pair<std::string, Tile<Color>> tile : tiles_map)
+	for (std::pair<std::string, Tile<uint32_t>> tile : tiles_map)
 	{
 		tiles_id.insert({tile.first, id});
 		tiles.push_back(tile.second);
@@ -287,14 +289,14 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 			continue;
 		}
 		neighbors_ids.push_back(std::make_tuple(tiles_id[neighbor1], orientation1,
-										   tiles_id[neighbor2], orientation2));
+												tiles_id[neighbor2], orientation2));
 	}
 
 	for (unsigned test = 0; test < 10; test++)
 	{
 		int seed = get_random_seed();
-		TilingWFC<Color> wfc(tiles, neighbors_ids, height, width, {periodic_output},
-							 seed);
+		TilingWFC<uint32_t> wfc(tiles, neighbors_ids, height, width, {periodic_output},
+								seed);
 
 		// For the summer tileset, place water on the borders, and land in the middle
 		if (name == "Summer")
@@ -312,7 +314,7 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 			wfc.set_tile(tiles_id["grass"], 0, width / 2, height / 2);
 		}
 
-		Array2D<Color> *success = wfc.run();
+		Array2D<uint32_t> *success = wfc.run();
 		if (success != nullptr)
 		{
 			write_image_png("results/" + name + "_" + subset + ".png", *success);
