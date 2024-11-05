@@ -1,11 +1,11 @@
 #ifndef FAST_WFC_TILING_WFC_H
 #define FAST_WFC_TILING_WFC_H
 
+#include "model/array2D.h"
+#include "wfc.h"
+
 #include <unordered_map>
 #include <vector>
-
-#include "utils/array2D.h"
-#include "wfc.h"
 
 /**
  * The distinct symmetries of a tile.

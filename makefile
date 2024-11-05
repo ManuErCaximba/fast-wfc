@@ -2,7 +2,7 @@
 TARGET = main.exe
 
 # Directorios
-SRC_DIR = src\lib
+SRC_DIR = src
 BUILD_DIR = build
 DEBUG_DIR = $(BUILD_DIR)\Debug
 RELEASE_DIR = $(BUILD_DIR)\Release
@@ -58,12 +58,12 @@ $(DEBUG_DIR):
 	mkdir $(DEBUG_DIR)
 
 $(RELEASE_DIR):
-	@if not exist $(RELEASE_DIR) mkdir $(RELEASE_DIR)
+	mkdir $(RELEASE_DIR)
 
 # Limpieza de archivos generados
 clean:
-	@if exist $(DEBUG_DIR) rmdir /S /Q $(DEBUG_DIR)
-	@if exist $(RELEASE_DIR) rmdir /S /Q $(RELEASE_DIR)
+	rmdir /S /Q $(DEBUG_DIR)
+	rmdir /S /Q $(RELEASE_DIR)
 
 # Phony targets para evitar conflictos con archivos reales
 .PHONY: all debug release clean

@@ -1,9 +1,9 @@
-#include "src/include/overlapping_wfc.h"
-#include "src/include/tiling_wfc.h"
-#include "src/include/utils/color.h"
-#include "src/include/utils/array3D.h"
-#include "src/include/wfc.h"
-#include "lib/all.h"
+#include "src/headers/overlapping_wfc.h"
+#include "src/headers/tiling_wfc.h"
+#include "src/headers/model/color.h"
+#include "src/headers/model/array3D.h"
+#include "src/headers/wfc.h"
+#include "lib/dependencies.h"
 
 #include <unordered_set>
 #include <iostream>

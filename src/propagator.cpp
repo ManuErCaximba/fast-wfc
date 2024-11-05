@@ -1,5 +1,5 @@
-#include "../include/propagator.h"
-#include "../include/wave.h"
+#include "headers/propagator.h"
+#include "headers/wave.h"
 
 void Propagator::init_compatible() noexcept {
   std::array<int, 4> value;

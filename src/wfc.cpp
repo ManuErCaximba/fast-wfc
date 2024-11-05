@@ -1,4 +1,5 @@
-#include "../include/wfc.h"
+#include "headers/wfc.h"
+
 #include <limits>
 
 namespace

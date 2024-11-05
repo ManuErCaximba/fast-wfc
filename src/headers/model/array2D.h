@@ -2,6 +2,7 @@
 #define FAST_WFC_UTILS_ARRAY2D_H
 
 #include "assert.h"
+
 #include <vector>
 
 /**

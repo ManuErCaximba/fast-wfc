@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "utils/array2D.h"
+#include "model/array2D.h"
 #include "wfc.h"
 
 /**

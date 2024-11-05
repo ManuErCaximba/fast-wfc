@@ -2,7 +2,8 @@
 #define FAST_WFC_PROPAGATOR_H
 
 #include "direction.h"
-#include "utils/array3D.h"
+#include "model/array3D.h"
+
 #include <tuple>
 #include <vector>
 #include <array>

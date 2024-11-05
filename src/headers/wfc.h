@@ -1,12 +1,11 @@
 #ifndef FAST_WFC_WFC_H
 #define FAST_WFC_WFC_H
 
-#include <random>
-
-#include "utils/array2D.h"
+#include "model/array2D.h"
 #include "propagator.h"
 #include "wave.h"
 
+#include <random>
 /**
  * Class containing the generic WFC algorithm.
  */
