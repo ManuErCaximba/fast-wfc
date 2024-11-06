@@ -41,7 +41,7 @@ Array2D<unsigned> *WFC::wave_to_output() const noexcept
 	return output_patterns;
 }
 
-WFC::WFC(bool periodic_output, int seed,
+WFC::WFC(bool periodic_output, unsigned seed,
 		 std::vector<double> patterns_frequencies,
 		 Propagator::PropagatorState propagator, unsigned wave_height,
 		 unsigned wave_width) noexcept
@@ -59,11 +59,11 @@ Array2D<unsigned> *WFC::run() noexcept
 		ObserveStatus result = observe();
 
 		// Check if the algorithm has terminated.
-		if (result == failure)
+		if (result == FAILURE)
 		{
 			return nullptr;
 		}
-		else if (result == success)
+		else if (result == SUCCESS)
 		{
 			return wave_to_output();
 		}
@@ -81,7 +81,7 @@ WFC::ObserveStatus WFC::observe() noexcept
 	// If there is a contradiction, the algorithm has failed.
 	if (argmin == -2)
 	{
-		return failure;
+		return FAILURE;
 	}
 
 	// If the lowest entropy is 0, then the algorithm has succeeded and
@@ -89,7 +89,7 @@ WFC::ObserveStatus WFC::observe() noexcept
 	if (argmin == -1)
 	{
 		wave_to_output();
-		return success;
+		return SUCCESS;
 	}
 
 	// Choose an element according to the pattern distribution
@@ -124,5 +124,5 @@ WFC::ObserveStatus WFC::observe() noexcept
 		}
 	}
 
-	return to_continue;
+	return TO_CONTINUE;
 }

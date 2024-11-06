@@ -73,7 +73,7 @@ private:
 	 */
 	OverlappingWFC(
 		const Array2D<T> &input, const OverlappingWFCOptions &options,
-		const int &seed,
+		const unsigned &seed,
 		const std::pair<std::vector<Array2D<T>>, std::vector<double>> &patterns,
 		const std::vector<std::array<std::vector<unsigned>, 4>>
 			&propagator) noexcept
@@ -93,7 +93,7 @@ private:
 	 * parameters.
 	 */
 	OverlappingWFC(const Array2D<T> &input, const OverlappingWFCOptions &options,
-				   const int &seed,
+				   const unsigned &seed,
 				   const std::pair<std::vector<Array2D<T>>, std::vector<double>>
 					   &patterns) noexcept
 		: OverlappingWFC(input, options, seed, patterns,
@@ -181,6 +181,10 @@ private:
 							 ? input.width
 							 : input.width - options.pattern_size + 1;
 
+		//patterns.reserve(max_i * max_j * 8);
+		//patterns_weight.reserve(max_i * max_j * 8);
+		//unsigned patterns_cont = 0;
+
 		for (unsigned i = 0; i < max_i; i++)
 		{
 			for (unsigned j = 0; j < max_j; j++)
@@ -215,10 +219,13 @@ private:
 					{
 						patterns.push_back(symmetries[k]);
 						patterns_weight.push_back(1);
+						//patterns_cont++;
 					}
 				}
 			}
 		}
+		//patterns.resize(patterns_cont);
+		//patterns_weight.resize(patterns_weight);
 
 		return {patterns, patterns_weight};
 	}

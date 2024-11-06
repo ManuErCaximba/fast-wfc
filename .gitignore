@@ -2,4 +2,4 @@
 build
 samples_og.xml
 NREADME.md
-outputs/*
+outputs/**

@@ -8,21 +8,6 @@
 #include <iostream>
 #include <chrono>
 
-/**
- * Get a random seed.
- * This function use random_device on linux, but use the C rand function for
- * other targets. This is because, for instance, windows don't implement
- * random_device non-deterministically.
- */
-int get_random_seed()
-{
-#ifdef __linux__
-	return random_device()();
-#else
-	return rand();
-#endif
-}
-
 Array2D<uint32_t> *read_image(const std::string &file_path) noexcept
 {
 	int width;
@@ -71,6 +56,7 @@ void read_overlapping_instance(pugi::xml_node &node)
 	unsigned screenshots = 1;
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
+	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
 
 	std::cout << name << " started!" << std::endl;
 	// Stop hardcoding samples
@@ -86,7 +72,6 @@ void read_overlapping_instance(pugi::xml_node &node)
 	{
 		for (unsigned test = 0; test < 10; test++)
 		{
-			int seed = get_random_seed();
 			OverlappingWFC<uint32_t> wfc(*m, options, seed);
 			Array2D<uint32_t> *success = wfc.run();
 			if (success != nullptr)
@@ -126,7 +111,7 @@ Symmetry to_symmetry(const std::string &symmetry_name)
 	}
 	if (symmetry_name == "\\")
 	{
-		return Symmetry::backslash;
+		return Symmetry::BACKSLASH;
 	}
 	if (symmetry_name == "F")
 	{
@@ -252,6 +237,7 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 	bool periodic_output = node.attribute("periodic").as_bool();
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
+	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
 
 	std::cout << name << " " << subset << " started!" << std::endl;
 
@@ -294,7 +280,6 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 
 	for (unsigned test = 0; test < 10; test++)
 	{
-		int seed = get_random_seed();
 		TilingWFC<uint32_t> wfc(tiles, neighbors_ids, height, width, {periodic_output},
 								seed);
 
@@ -392,12 +377,6 @@ void read_config_file() noexcept
 
 int main()
 {
-
-// Initialize rand for non-linux targets
-#ifndef __linux__
-	srand(time(nullptr));
-#endif
-
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	start = std::chrono::system_clock::now();
 
