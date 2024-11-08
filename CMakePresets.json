@@ -36,16 +36,6 @@
 		"configurePreset": "release",
 		"description": "Compile in Release mode"
 	  }
-	],
-	"testPresets": [
-	  {
-		"name": "test-debug",
-		"configurePreset": "debug"
-	  },
-	  {
-		"name": "test-release",
-		"configurePreset": "release"
-	  }
 	]
   }
   

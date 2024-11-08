@@ -48,15 +48,14 @@ void write_image_png(const std::string &file_path, const Array2D<uint32_t> &m) n
 /**
  * Read the overlapping wfc problem from the xml node.
  */
-void read_overlapping_instance(pugi::xml_node &node)
+void read_overlapping_instance(pugi::xml_node &node, unsigned cont)
 {
 	std::string name = node.attribute("name").as_string();
 	unsigned N = node.attribute("N").as_uint();
-	bool periodic_output = node.attribute("periodic").as_bool();
-	bool periodic_input = node.attribute("periodicInput").as_bool();
-	bool ground = node.attribute("ground").as_bool();
+	bool periodic_output = node.attribute("periodic").as_bool() ? node.attribute("periodic").as_bool() : false;
+	bool periodic_input = node.attribute("periodicInput").as_bool() ? node.attribute("periodicInput").as_bool() : true;
+	bool ground = node.attribute("ground").as_bool() ? node.attribute("ground").as_bool() : false;
 	unsigned symmetry = node.attribute("symmetry").as_uint() != 0 ? node.attribute("symmetry").as_uint() : 8;
-	unsigned screenshots = 1;
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
 	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
@@ -73,22 +72,19 @@ void read_overlapping_instance(pugi::xml_node &node)
 	}
 	OverlappingWFCOptions options = {
 		periodic_input, periodic_output, height, width, symmetry, ground, N};
-	for (unsigned i = 0; i < screenshots; i++)
+	for (unsigned test = 0; test < 10; test++)
 	{
-		for (unsigned test = 0; test < 10; test++)
+		OverlappingWFC wfc(*m, options, seed + test);
+		Array2D<uint32_t> *success = wfc.run();
+		if (success != nullptr)
 		{
-			OverlappingWFC wfc(*m, options, seed + test);
-			Array2D<uint32_t> *success = wfc.run();
-			if (success != nullptr)
-			{
-				write_image_png("results/" + name + std::to_string(i) + ".png", *success);
-				std::cout << name << " finished!" << std::endl;
-				break;
-			}
-			else
-			{
-				std::cout << "failed!" << std::endl;
-			}
+			write_image_png("results/" + name + std::to_string(cont) + ".png", *success);
+			std::cout << name << " finished!" << std::endl;
+			break;
+		}
+		else
+		{
+			std::cout << "failed!" << std::endl;
 		}
 	}
 }
@@ -235,11 +231,11 @@ std::vector<std::tuple<std::string, unsigned, std::string, unsigned>> read_neigh
 /**
  * Read an instance of a tiling WFC problem.
  */
-void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_dir) noexcept
+void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_dir, unsigned cont) noexcept
 {
 	std::string name = node.attribute("name").as_string();
 	std::string subset = node.attribute("subset").as_string();
-	bool periodic_output = node.attribute("periodic").as_bool();
+	bool periodic_output = node.attribute("periodic").as_bool() ? node.attribute("periodic").as_bool() : false;
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
 	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
@@ -307,7 +303,7 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 		Array2D<uint32_t> *success = wfc.run();
 		if (success != nullptr)
 		{
-			write_image_png("results/" + name + "_" + subset + ".png", *success);
+			write_image_png("results/" + name + "_" + subset + std::to_string(cont) + ".png", *success);
 			std::cout << name << " finished!" << std::endl;
 			break;
 		}
@@ -371,12 +367,14 @@ void read_config_file() noexcept
 	pugi::xml_document doc;
 	doc.load_file("samples.xml");
 	pugi::xml_node samples = doc.child("samples");
+	unsigned cont = 0;
 	for (pugi::xml_node node : samples.children())
 	{
 		if (std::string(node.name()) == "overlapping")
-			read_overlapping_instance(node);
+			read_overlapping_instance(node, cont);
 		else
-			read_simpletiled_instance(node, "samples");
+			read_simpletiled_instance(node, "samples", cont);
+		cont++;
 	}
 }
 
