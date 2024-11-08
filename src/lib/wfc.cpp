@@ -76,51 +76,59 @@ Array2D<unsigned> *WFC::run() noexcept
 	}
 }
 
-WFC::ObserveStatus WFC::observe() noexcept {
-    // Get the cell with lowest entropy.
-    int argmin = wave.get_min_entropy(gen);
+WFC::ObserveStatus WFC::observe() noexcept
+{
+	// Get the cell with lowest entropy.
+	int argmin = wave.get_min_entropy(gen);
 
-    // If there is a contradiction, the algorithm has failed.
-    if (argmin == -2) {
-      return FAILURE;
-    }
+	// If there is a contradiction, the algorithm has failed.
+	if (argmin == -2)
+	{
+		return FAILURE;
+	}
 
-    // If the lowest entropy is 0, then the algorithm has succeeded and
-    // finished.
-    if (argmin == -1) {
-      wave_to_output();
-      return SUCCESS;
-    }
+	// If the lowest entropy is 0, then the algorithm has succeeded and
+	// finished.
+	if (argmin == -1)
+	{
+		wave_to_output();
+		return SUCCESS;
+	}
 
-    // Choose an element according to the pattern distribution
-    double s = 0;
-    for (unsigned k = 0; k < nb_patterns; k++) {
-      s += wave.get(argmin, k) ? patterns_frequencies[k] : 0;
-    }
+	// Choose an element according to the pattern distribution
+	double s = 0;
+	for (unsigned k = 0; k < nb_patterns; k++)
+	{
+		s += wave.get(argmin, k) ? patterns_frequencies[k] : 0;
+	}
 
-    std::uniform_real_distribution<> dis(0, s);
-    double random_value = dis(gen);
-    size_t chosen_value = nb_patterns - 1;
+	std::uniform_real_distribution<> dis(0, s);
+	double random_value = dis(gen);
+	size_t chosen_value = nb_patterns - 1;
 
-    for (unsigned k = 0; k < nb_patterns; k++) {
-      random_value -= wave.get(argmin, k) ? patterns_frequencies[k] : 0;
-      if (random_value <= 0) {
-        chosen_value = k;
-        break;
-      }
-    }
+	for (unsigned k = 0; k < nb_patterns; k++)
+	{
+		random_value -= wave.get(argmin, k) ? patterns_frequencies[k] : 0;
+		if (random_value <= 0)
+		{
+			chosen_value = k;
+			break;
+		}
+	}
 
-    // And define the cell with the pattern.
-    for (unsigned k = 0; k < nb_patterns; k++) {
-      if (wave.get(argmin, k) != (k == chosen_value)) {
-        propagator.add_to_propagator(argmin / wave.width, argmin % wave.width,
-                                     k);
-        wave.set(argmin, k, false);
-      }
-    }
+	// And define the cell with the pattern.
+	for (unsigned k = 0; k < nb_patterns; k++)
+	{
+		if (wave.get(argmin, k) != (k == chosen_value))
+		{
+			propagator.add_to_propagator(argmin / wave.width, argmin % wave.width,
+										 k);
+			wave.set(argmin, k, false);
+		}
+	}
 
-    return TO_CONTINUE;
-  }
+	return TO_CONTINUE;
+}
 
 void WFC::propagate() noexcept { propagator.propagate(wave); }
 

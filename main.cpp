@@ -5,6 +5,8 @@
 #include "utils/array3D.hpp"
 #include "wfc.hpp"
 
+// #include "fast_wfc.h"
+
 #include <unordered_set>
 #include <iostream>
 #include <chrono>
