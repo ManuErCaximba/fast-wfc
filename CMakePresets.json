@@ -8,7 +8,7 @@
 	"configurePresets": [
 	  {
 		"name": "debug",
-		"description": "Configura la compilación en modo Debug con gdb",
+		"description": "Preset for Debug mode with gdb",
 		"generator": "Unix Makefiles",
 		"binaryDir": "${sourceDir}/build/debug",
 		"cacheVariables": {
@@ -17,7 +17,7 @@
 	  },
 	  {
 		"name": "release",
-		"description": "Configura la compilación en modo Release",
+		"description": "Preset for Release mode with gdb",
 		"generator": "Unix Makefiles",
 		"binaryDir": "${sourceDir}/build/release",
 		"cacheVariables": {
@@ -29,12 +29,12 @@
 	  {
 		"name": "build-debug",
 		"configurePreset": "debug",
-		"description": "Compila en modo Debug"
+		"description": "Compile in Debug mode"
 	  },
 	  {
 		"name": "build-release",
 		"configurePreset": "release",
-		"description": "Compila en modo Release"
+		"description": "Compile in Release mode"
 	  }
 	],
 	"testPresets": [
