@@ -1,27 +1,13 @@
-#include "src/headers/overlapping_wfc.h"
-#include "src/headers/tiling_wfc.h"
-#include "src/headers/model/array3D.h"
-#include "src/headers/wfc.h"
-#include "lib/dependencies.h"
+#include "src/external/dependencies.h"
+
+#include "overlapping_wfc.hpp"
+#include "tiling_wfc.hpp"
+#include "utils/array3D.hpp"
+#include "wfc.hpp"
 
 #include <unordered_set>
 #include <iostream>
 #include <chrono>
-
-/**
- * Get a random seed.
- * This function use random_device on linux, but use the C rand function for
- * other targets. This is because, for instance, windows don't implement
- * random_device non-deterministically.
- */
-int get_random_seed()
-{
-#ifdef __linux__
-	return random_device()();
-#else
-	return rand();
-#endif
-}
 
 Array2D<uint32_t> *read_image(const std::string &file_path) noexcept
 {
@@ -39,7 +25,7 @@ Array2D<uint32_t> *read_image(const std::string &file_path) noexcept
 		for (unsigned j = 0; j < (unsigned)width; j++)
 		{
 			unsigned index = 4 * (i * width + j);
-			uint8_t array[4] = {data[index], data[index + 2], data[index + 2], data[index + 3]};
+			uint8_t array[4] = {data[index], data[index + 1], data[index + 2], data[index + 3]};
 			uint32_t byte;
 			memcpy(&byte, array, sizeof(byte));
 			m->data[i * width + j] = byte;
@@ -71,10 +57,13 @@ void read_overlapping_instance(pugi::xml_node &node)
 	unsigned screenshots = 1;
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
+	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
+
+	std::cout << "seed: " << seed << std::endl;
 
 	std::cout << name << " started!" << std::endl;
 	// Stop hardcoding samples
-	const std::string image_path = "inputs/" + name + ".png";
+	const std::string image_path = "samples/" + name + ".png";
 	Array2D<uint32_t> *m = read_image(image_path);
 	if (m == nullptr)
 	{
@@ -86,12 +75,11 @@ void read_overlapping_instance(pugi::xml_node &node)
 	{
 		for (unsigned test = 0; test < 10; test++)
 		{
-			int seed = get_random_seed();
-			OverlappingWFC<uint32_t> wfc(*m, options, seed);
+			OverlappingWFC wfc(*m, options, seed + test);
 			Array2D<uint32_t> *success = wfc.run();
 			if (success != nullptr)
 			{
-				write_image_png("outputs/" + name + std::to_string(i) + ".png", *success);
+				write_image_png("results/" + name + std::to_string(i) + ".png", *success);
 				std::cout << name << " finished!" << std::endl;
 				break;
 			}
@@ -126,7 +114,7 @@ Symmetry to_symmetry(const std::string &symmetry_name)
 	}
 	if (symmetry_name == "\\")
 	{
-		return Symmetry::backslash;
+		return Symmetry::BACKSLASH;
 	}
 	if (symmetry_name == "F")
 	{
@@ -252,11 +240,12 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 	bool periodic_output = node.attribute("periodic").as_bool();
 	unsigned width = node.attribute("width").as_uint() != 0 ? node.attribute("width").as_uint() : 48;
 	unsigned height = node.attribute("height").as_uint() != 0 ? node.attribute("height").as_uint() : 48;
+	unsigned seed = node.attribute("seed").as_uint() != 0 ? node.attribute("seed").as_uint() : time(0);
 
 	std::cout << name << " " << subset << " started!" << std::endl;
 
 	pugi::xml_document doc;
-	std::string path = "inputs/" + name + "/data.xml";
+	std::string path = "samples/" + name + "/data.xml";
 	doc.load_file(path.c_str());
 	pugi::xml_node set_node = doc.child("set");
 	unsigned size = set_node.attribute("size").as_uint();
@@ -294,7 +283,6 @@ void read_simpletiled_instance(pugi::xml_node &node, const std::string &current_
 
 	for (unsigned test = 0; test < 10; test++)
 	{
-		int seed = get_random_seed();
 		TilingWFC<uint32_t> wfc(tiles, neighbors_ids, height, width, {periodic_output},
 								seed);
 
@@ -377,7 +365,7 @@ void remove_from_directory(const char *path)
  */
 void read_config_file() noexcept
 {
-	remove_from_directory("outputs");
+	remove_from_directory("results");
 	pugi::xml_document doc;
 	doc.load_file("samples.xml");
 	pugi::xml_node samples = doc.child("samples");
@@ -386,18 +374,12 @@ void read_config_file() noexcept
 		if (std::string(node.name()) == "overlapping")
 			read_overlapping_instance(node);
 		else
-			read_simpletiled_instance(node, "inputs");
+			read_simpletiled_instance(node, "samples");
 	}
 }
 
 int main()
 {
-
-// Initialize rand for non-linux targets
-#ifndef __linux__
-	srand(time(nullptr));
-#endif
-
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	start = std::chrono::system_clock::now();
 

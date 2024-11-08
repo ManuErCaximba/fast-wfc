@@ -1,0 +1,51 @@
+{
+	"version": 3,
+	"cmakeMinimumRequired": {
+	  "major": 3,
+	  "minor": 13,
+	  "patch": 0
+	},
+	"configurePresets": [
+	  {
+		"name": "debug",
+		"description": "Preset for Debug mode with gdb",
+		"generator": "Unix Makefiles",
+		"binaryDir": "${sourceDir}/build/debug",
+		"cacheVariables": {
+		  "CMAKE_BUILD_TYPE": "Debug"
+		}
+	  },
+	  {
+		"name": "release",
+		"description": "Preset for Release mode with gdb",
+		"generator": "Unix Makefiles",
+		"binaryDir": "${sourceDir}/build/release",
+		"cacheVariables": {
+		  "CMAKE_BUILD_TYPE": "Release"
+		}
+	  }
+	],
+	"buildPresets": [
+	  {
+		"name": "build-debug",
+		"configurePreset": "debug",
+		"description": "Compile in Debug mode"
+	  },
+	  {
+		"name": "build-release",
+		"configurePreset": "release",
+		"description": "Compile in Release mode"
+	  }
+	],
+	"testPresets": [
+	  {
+		"name": "test-debug",
+		"configurePreset": "debug"
+	  },
+	  {
+		"name": "test-release",
+		"configurePreset": "release"
+	  }
+	]
+  }
+  

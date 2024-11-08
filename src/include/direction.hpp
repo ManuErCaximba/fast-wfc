@@ -1,5 +1,5 @@
-#ifndef FAST_WFC_DIRECTION_H
-#define FAST_WFC_DIRECTION_H
+#ifndef FAST_WFC_DIRECTION_HPP
+#define FAST_WFC_DIRECTION_HPP
 
 /**
  * A direction is represented by an unsigned integer in the range [0; 3].

@@ -1,5 +1,6 @@
 .vscode
 build
-samples_og.xml
+results/*
 NREADME.md
-outputs/*
+samples_og.xml
+wfc_demo.exe

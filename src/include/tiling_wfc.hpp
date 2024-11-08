@@ -1,8 +1,8 @@
-#ifndef FAST_WFC_TILING_WFC_H
-#define FAST_WFC_TILING_WFC_H
+#ifndef FAST_WFC_TILING_WFC_HPP
+#define FAST_WFC_TILING_WFC_HPP
 
-#include "model/array2D.h"
-#include "wfc.h"
+#include "utils/array2D.hpp"
+#include "wfc.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -17,7 +17,7 @@ enum class Symmetry
 	T,
 	I,
 	L,
-	backslash,
+	BACKSLASH,
 	F
 };
 
@@ -27,7 +27,7 @@ enum class Symmetry
  */
 constexpr unsigned nb_of_possible_orientations(const Symmetry &symmetry)
 {
-	return symmetry == Symmetry::X ? 1 : symmetry == Symmetry::I || symmetry == Symmetry::backslash ? 2 : symmetry == Symmetry::T || symmetry == Symmetry::L ? 4 : 8;
+	return symmetry == Symmetry::X ? 1 : symmetry == Symmetry::I || symmetry == Symmetry::BACKSLASH ? 2 : symmetry == Symmetry::T || symmetry == Symmetry::L ? 4 : 8;
 };
 
 /**
@@ -52,7 +52,7 @@ struct Tile
 		case Symmetry::X:
 			return {0};
 		case Symmetry::I:
-		case Symmetry::backslash:
+		case Symmetry::BACKSLASH:
 			return {1, 0};
 		case Symmetry::T:
 		case Symmetry::L:
@@ -76,7 +76,7 @@ struct Tile
 			return {0};
 		case Symmetry::I:
 			return {0, 1};
-		case Symmetry::backslash:
+		case Symmetry::BACKSLASH:
 			return {1, 0};
 		case Symmetry::T:
 			return {0, 3, 2, 1};
@@ -141,7 +141,7 @@ struct Tile
 		switch (symmetry)
 		{
 		case Symmetry::I:
-		case Symmetry::backslash:
+		case Symmetry::BACKSLASH:
 			oriented.push_back(data.rotated());
 			break;
 		case Symmetry::T:
@@ -395,7 +395,7 @@ public:
 		const std::vector<std::tuple<unsigned, unsigned, unsigned, unsigned>>
 			&neighbors,
 		const unsigned height, const unsigned width,
-		const TilingWFCOptions &options, int seed)
+		const TilingWFCOptions &options, unsigned seed)
 		: tiles(tiles),
 		  id_to_oriented_tile(generate_oriented_tile_ids(tiles).first),
 		  oriented_tile_ids(generate_oriented_tile_ids(tiles).second),

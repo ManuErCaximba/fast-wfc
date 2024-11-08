@@ -1,5 +1,5 @@
 <samples>
-	<overlapping name="Red Maze" N="2"/>
+	<overlapping seed="1" name="Red Maze" N="2"/>
 	<!--
 	<overlapping name="Red Maze" N="2"/>
 	<overlapping name="Red Maze" N="2"/>

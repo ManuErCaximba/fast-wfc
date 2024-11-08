@@ -1,5 +1,5 @@
-#ifndef FAST_WFC_UTILS_ARRAY2D_H
-#define FAST_WFC_UTILS_ARRAY2D_H
+#ifndef FAST_WFC_UTILS_ARRAY2D_HPP
+#define FAST_WFC_UTILS_ARRAY2D_HPP
 
 #include "assert.h"
 
@@ -29,15 +29,15 @@ public:
 	 * Build a 2D array given its height and width.
 	 * All the array elements are initialized to default value.
 	 */
-	Array2D(std::size_t height, std::size_t width) noexcept
-		: height(height), width(width), data(width * height) {}
+	Array2D(std::size_t _height, std::size_t _width) noexcept
+		: height(_height), width(_width), data(_width * _height) {}
 
 	/**
 	 * Build a 2D array given its height and width.
 	 * All the array elements are initialized to value.
 	 */
-	Array2D(std::size_t height, std::size_t width, T value) noexcept
-		: height(height), width(width), data(width * height, value) {}
+	Array2D(std::size_t _height, std::size_t _width, T value) noexcept
+		: height(_height), width(_width), data(_width * _height, value) {}
 
 	/**
 	 * Return a const reference to the element in the i-th line and j-th column.
