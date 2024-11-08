@@ -1,8 +1,8 @@
-#ifndef FAST_WFC_TILING_WFC_H
-#define FAST_WFC_TILING_WFC_H
+#ifndef FAST_WFC_TILING_WFC_HPP
+#define FAST_WFC_TILING_WFC_HPP
 
-#include "model/array2D.h"
-#include "wfc.h"
+#include "utils/array2D.hpp"
+#include "wfc.hpp"
 
 #include <unordered_map>
 #include <vector>

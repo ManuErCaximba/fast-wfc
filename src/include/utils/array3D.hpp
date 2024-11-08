@@ -1,5 +1,5 @@
-#ifndef FAST_WFC_UTILS_ARRAY3D_H
-#define FAST_WFC_UTILS_ARRAY3D_H
+#ifndef FAST_WFC_UTILS_ARRAY3D_HPP
+#define FAST_WFC_UTILS_ARRAY3D_HPP
 
 #include "assert.h"
 

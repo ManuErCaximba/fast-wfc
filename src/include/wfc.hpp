@@ -1,9 +1,9 @@
-#ifndef FAST_WFC_WFC_H
-#define FAST_WFC_WFC_H
+#ifndef FAST_WFC_WFC_HPP
+#define FAST_WFC_WFC_HPP
 
-#include "model/array2D.h"
-#include "propagator.h"
-#include "wave.h"
+#include "utils/array2D.hpp"
+#include "propagator.hpp"
+#include "wave.hpp"
 
 #include <random>
 /**
@@ -75,19 +75,12 @@ public:
 	/**
 	 * Propagate the information of the wave.
 	 */
-	void propagate() noexcept { propagator.propagate(wave); }
+	void propagate() noexcept;
 
 	/**
 	 * Remove pattern from cell (i,j).
 	 */
-	void remove_wave_pattern(unsigned i, unsigned j, unsigned pattern) noexcept
-	{
-		if (wave.get(i, j, pattern))
-		{
-			wave.set(i, j, pattern, false);
-			propagator.add_to_propagator(i, j, pattern);
-		}
-	}
+	void remove_wave_pattern(unsigned i, unsigned j, unsigned pattern) noexcept;
 };
 
 #endif // FAST_WFC_WFC_HPP_
